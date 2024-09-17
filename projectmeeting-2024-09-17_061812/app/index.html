@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>カレンダー作成</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div>
+        <label for="calendar-name">カレンダー名:</label>
+        <input type="text" id="calendar-name" placeholder="カレンダー名を入力してください" />
+    </div>
+
+    <button id="prev" type="button">前の月</button>
+    <button id="next" type="button">次の月</button>
+    <div id="calendar"></div>
+
+    <div>
+        <label for="start-time">開始時刻:</label>
+        <input type="time" id="start-time" />
+    </div>
+
+    <div>
+        <label for="end-time">終了時刻:</label>
+        <input type="time" id="end-time" />
+    </div>
+
+    <button id="create-button" type="button">作成</button>
+
+    <!--  テスト用ボタン    -->
+    <!--    <button id="testbutton" type="button">test</button> -->
+
+
+    <script src="script.js"></script>
+</body>
+
+</html>

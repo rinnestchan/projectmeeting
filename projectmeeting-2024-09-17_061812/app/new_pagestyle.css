@@ -1,0 +1,136 @@
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('img/kirakira5.jpg');
+    background-size: cover;
+}
+
+#timecalendar {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 4px;
+    padding-top: 5px;
+    /*   background-color:rgba(255,0,0,0.1); */
+}
+
+#nametext {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#nametext label {
+    padding-right: 5px;
+}
+
+#buttonset {
+    display: flex;
+    flex-wrap: wrap;
+    width: 50%;
+    justify-content: flex-start;
+    margin-top: 8px;
+}
+
+#buttonset div {
+    padding: 3px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="time"] {
+    padding: 5px;
+    /* margin-bottom: 10px; */
+    border: 2px solid black;
+    border-radius: 4px;
+}
+
+button,
+input[type="button"] {
+    cursor: pointer;
+    background-color: #15b8ab;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+section {
+    margin: 10px;
+}
+
+h1 {
+    font-size: 18px;
+    border-bottom: 4px solid #15b8ab;
+    width: fit-content;
+}
+
+p {
+    border-bottom: 2px solid #15b8ab;
+    width: fit-content;
+}
+
+table {
+    width: 45%;
+    border: 2px solid black;
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin: 8px;
+    background-color: #15b8ab;
+}
+
+thead {
+    color: azure;
+}
+
+td {
+    border: 1px solid #dddddd;
+    padding: 5px;
+    text-align: center;
+    background-color: white;
+}
+
+ul {
+    background-color: #ffffff;
+    width: 20%;
+    border: 2px solid black;
+}
+
+td.active {
+    cursor: pointer;
+    /* マウスカーソルをポインターに変更 */
+}
+
+td.active:hover {
+    background-color: #f1f1f1;
+}
+
+td.highlight:hover {
+    background-color: #d3d3d3;
+}
+
+.highlight {
+    background-color: #d3d3d3;
+}
+
+.today {
+    font-weight: bold;
+}
+
+.is-bold {
+    font-weight: bold;
+}
+
+.calendar-day.clicked,
+.nextcalendar-day.clicked,
+.today.clicked {
+    background-color: lightgray;
+    /* クリックされたときに背景色をグレーに変更 */
+}
+
+.calendar-day,
+.nextcalendar-day,
+.today {
+    cursor: pointer;
+    /* マウスカーソルをポインターに変更 */
+}

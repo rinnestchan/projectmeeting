@@ -1,0 +1,60 @@
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('img/kirakira5.jpg');
+    background-size: cover;
+
+}
+
+#data-display {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.saveddata {
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+h1 { 
+    border-bottom: 4px solid #15b8ab;
+    width: fit-content;
+}
+
+h2 {
+    border-bottom: 2px solid #15b8ab;
+    width: fit-content;
+}
+
+h1,
+h2 {
+    color: #333;
+}
+
+table {
+    border: 2px solid black;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-bottom: 20px;
+    background-color: white;
+}
+
+td {
+    border: 1px solid #dddddd;
+    padding: 5px;
+}
+
+button,
+input[type="button"] {
+    padding: 10px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+    background-color: #15b8ab;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+button:hover,
+input[type="button"]:hover {
+    background-color: #15b8ab;
+}

@@ -1,0 +1,100 @@
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('img/kirakira5.jpg');
+    background-size: cover;
+    background-color: azure;
+}
+
+#calendar {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="time"] {
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 2px solid black;
+    border-radius: 4px;
+}
+
+input[type="text"] {
+    width: 20%;
+    max-width: 40%;
+}
+
+#start-time,
+#end-time {
+    cursor: pointer;
+}
+
+button,
+input[type="button"] {
+    cursor: pointer;
+    background-color: #15b8ab;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+section {
+    margin: 10px;
+}
+
+h1 {
+    font-size: 18px;
+    border-bottom: 2px solid #15b8ab;
+}
+
+table {
+    border: 2px solid black;
+    border-spacing: 0;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+td {
+    border: 1px solid #dddddd;
+    padding: 5px;
+    text-align: center;
+}
+
+td:first-child {
+    color: red;
+}
+
+td:last-child {
+    color: royalblue;
+}
+
+td.is-disabled {
+    color: #cccccc;
+}
+
+.today {
+    font-weight: bold;
+}
+
+.is-bold {
+    font-weight: bold;
+}
+
+.calendar-day.clicked,
+.nextcalendar-day.clicked,
+.today.clicked {
+    background-color: lightgray;
+    /* クリックされたときに背景色をグレーに変更 */
+}
+
+.calendar-day,
+.nextcalendar-day,
+.today {
+    cursor: pointer;
+    /* マウスカーソルをポインターに変更 */
+}

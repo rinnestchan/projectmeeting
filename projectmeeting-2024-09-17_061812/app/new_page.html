@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>選択された日付</title>
+    <link rel="stylesheet" href="new_pagestyle.css" />
+</head>
+
+<body>
+
+    <div id="displaytest"></div>
+    <h1>選択された日付</h1>
+    <div id="selected-dates"></div>
+
+    <div id="nametext">
+        <label for="name">名前:</label>
+        <input type="text" id="name" placeholder="名前を入力してください">
+    </div>
+
+    <div id="buttonset">
+        <div>
+            <input type="button" onclick="history.back()" value="戻る">
+        </div>
+        <div>
+            <input type="button" value="保存" id="savebtn">
+        </div>
+        <div>
+            <button id="resset-btn">リセット</button>
+        </div>
+        <div>
+            <!-- データ表示ページへのリンクを追加 -->
+            <input type="button" onclick="location.href='view_data.html'" value="保存データの表示">
+        </div>
+    </div>
+
+    <!--    カレンダー表示位置 -->
+    <div id="timecalendar"></div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.5.0/sql-wasm.js"></script>
+    <script>
+        const date = new Date();
+        let nextmonth = date.getMonth() + 2;
+
+        // URLパラメータを取得して解析する関数
+        function getParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                calendarName: params.get("calendarName"),
+                year: params.get("year"),
+                month: params.get("month"),
+                selectedDates: JSON.parse(params.get("selectedDates")),
+                startTime: params.get("startTime"),
+                endTime: params.get("endTime")
+            };
+        }
+
+        function getnextParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                calendarName: params.get("calendarName"),
+                year: params.get("year"),
+                month: params.get("month"),
+                nm_selectedDates: JSON.parse(params.get("nm_selectedDates")),
+                startTime: params.get("startTime"),
+                endTime: params.get("endTime")
+            };
+        }
+        //
+
+        // パラメータを元に情報を表示する関数
+        function displaySelectedDates() {
+            const params = getParams();
+            const nextparams = getnextParams();
+            const selectedDatesDiv = document.getElementById("selected-dates");
+            const intprmsmonth = parseInt(params.month);  //数値型に変換
+            nextmonth = intprmsmonth + 1;  //1足して右側のカレンダー月にする
+            //console.log(params.selectedDates[0]);  //確認用コンソール
+
+            if (nextmonth > 12) {  //右のカレンダーが年をまたいだ時の処理
+                nextmonth = 1;
+                nextparams.year++;
+            }
+
+            selectedDatesDiv.innerHTML = `
+          <p>カレンダー名: ${params.calendarName}</p>
+          <p>開始時刻: ${params.startTime}</p>
+          <p>終了時刻: ${params.endTime}</p>
+          <p>選択された日付:</p>
+          <ul>
+             ${params.selectedDates.map(date => `<li>${params.year}/${params.month}/${date}</li>`).join('')}
+             ${nextparams.nm_selectedDates.map(date => `<li>${nextparams.year}/${nextmonth}/${date}</li>`).join('')}
+          </ul>
+          
+        `;
+
+            const displaytest = document.getElementById("displaytest");
+            //displaytest.innerHTML = params.month;
+        }
+
+        function displaysetting() {
+            if (nextmonth > 12) {
+                nextmonth = 1;
+            }
+        }
+
+        displaysetting();
+        displaySelectedDates();
+
+
+        //       追加分
+        function createTimeString(hours, minutes) {
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+
+        let dateid = 0;
+
+        function createTimetable(day) {
+            const param = getParams();
+
+            if (param.selectedDates.length == 0) {
+                return;
+            }
+
+            const sctdate = param.selectedDates[day];
+            //console.log(sctdate);
+
+            const int_sthours = Number(param.startTime.substr(0, 2));
+            const int_stminutes = Number(param.startTime.substr(3, 2));
+            const int_edhours = Number(param.endTime.substr(0, 2));
+            const int_edminutes = Number(param.endTime.substr(3, 2));
+
+            const formattedEndTime = createTimeString(int_edhours, int_edminutes);
+            //console.log(formattedEndTime);
+
+            const tableBody = document.getElementById('timecalendar');
+            const tabletag = document.createElement('table');
+            tabletag.className = "first-calendar";
+            const tablehead = document.createElement('thead');
+            tablehead.id = "tableDate";
+
+            dateidName = "number" + dateid;
+            tablehead.innerHTML = "<tr>" +
+                `<th>` +
+                `${param.year}/${param.month}/` +
+                `${sctdate}` +
+                "</th>" +
+                "</tr>";
+
+            let currentHour = int_sthours;
+            let currentMinute = int_stminutes;
+
+            tableBody.appendChild(tabletag);
+            tabletag.appendChild(tablehead);
+
+            dateid = dateid + 1;
+
+            while (currentHour < int_edhours || (currentHour === int_edhours && currentMinute <= int_edminutes)) {
+                const row = document.createElement('tr');
+                const timeCell = document.createElement('td');
+                timeCell.className = 'timeText';
+                const activityCell = document.createElement('td');
+                activityCell.className = 'active';
+
+                const formattedTime = createTimeString(currentHour, currentMinute);
+
+                timeCell.textContent = formattedTime;
+                activityCell.textContent = "Check"; // Placeholder text
+
+                row.appendChild(timeCell);
+                row.appendChild(activityCell);
+
+                // Add click event listener to change background color
+                activityCell.addEventListener('click', function () {
+                    this.classList.toggle('highlight');
+                    timeCell.classList.toggle('checked');
+                });
+
+                tabletag.appendChild(row);
+
+
+                // Increment time 
+                currentMinute += 30;
+                if (currentMinute >= 60) {
+                    currentMinute = currentMinute - 60;
+                    currentHour++;
+                }
+
+                if (timeCell.textContent == formattedEndTime) {
+                    return;
+                }
+            }
+            if (currentMinute != int_edminutes) {
+                const row = document.createElement('tr');
+                const timeCell = document.createElement('td');
+                const activityCell = document.createElement('td');
+                activityCell.className = 'active';
+
+                const formattedTime = createTimeString(int_edhours, int_edminutes);
+                timeCell.textContent = formattedTime;
+                activityCell.textContent = "Check"; // Placeholder text
+
+                row.appendChild(timeCell);
+                row.appendChild(activityCell);
+
+                activityCell.addEventListener('click', function () {
+                    this.classList.toggle('highlight');
+                    timeCell.classList.toggle('checked');
+                });
+
+                tabletag.appendChild(row);
+            }
+        }
+
+        function createnextTimetable(day) {
+            const nextparam = getnextParams();
+
+            if (nextparam.nm_selectedDates.length == 0) {
+                return;
+            }
+
+            //右カレンダーの月表示を直す
+            const intprmsmonth = parseInt(nextparam.month);  //数値型に変換
+            nextmonth = intprmsmonth + 1;  //1足して右側のカレンダー月にする
+            //console.log(params.selectedDates[0]);  //確認用コンソール
+
+            if (nextmonth > 12) {  //右のカレンダーが年をまたいだ時の処理
+                nextmonth = 1;
+                nextparam.year++;
+            }
+
+            const sctdate = nextparam.nm_selectedDates[day];
+            //console.log(sctdate);
+
+            const int_sthours = Number(nextparam.startTime.substr(0, 2));
+            const int_stminutes = Number(nextparam.startTime.substr(3, 2));
+            const int_edhours = Number(nextparam.endTime.substr(0, 2));
+            const int_edminutes = Number(nextparam.endTime.substr(3, 2));
+
+            const formattedEndTime = createTimeString(int_edhours, int_edminutes);
+
+            const tableBody = document.getElementById('timecalendar');
+            const tabletag = document.createElement('table');
+            tabletag.className = "second-calendar";
+            const tablehead = document.createElement('thead');
+            tablehead.id = "tableDate";
+
+            tablehead.innerHTML = "<tr>" +
+                "<th>" +
+                `${nextparam.year}/${nextmonth}/` +
+                `${sctdate}` +
+                "</th>" +
+                "</tr>";
+
+            let currentHour = int_sthours;
+            let currentMinute = int_stminutes;
+
+            tableBody.appendChild(tabletag);
+            tabletag.appendChild(tablehead);
+
+
+            while (currentHour < int_edhours || (currentHour === int_edhours && currentMinute <= int_edminutes)) {
+                const row = document.createElement('tr');
+                const timeCell = document.createElement('td');
+                timeCell.className = 'timeText';
+                const activityCell = document.createElement('td');
+                activityCell.className = 'active';
+
+                const formattedTime = createTimeString(currentHour, currentMinute);
+
+                timeCell.textContent = formattedTime;
+                activityCell.textContent = "Check"; // Placeholder text
+
+                row.appendChild(timeCell);
+                row.appendChild(activityCell);
+
+                // Add click event listener to change background color
+                activityCell.addEventListener('click', function () {
+                    this.classList.toggle('highlight');
+                    timeCell.classList.toggle('checked');
+                });
+
+                tabletag.appendChild(row);
+
+                // Increment time by 15 minutes
+                currentMinute += 30;
+                if (currentMinute >= 60) {
+                    currentMinute = currentMinute - 60;
+                    currentHour++;
+                }
+
+                if (timeCell.textContent == formattedEndTime) {
+                    return;
+                }
+            }
+
+            if (currentMinute != int_edminutes) {
+                const row = document.createElement('tr');
+                const timeCell = document.createElement('td');
+                const activityCell = document.createElement('td');
+                activityCell.className = 'active';
+
+                const formattedTime = createTimeString(int_edhours, int_edminutes);
+                timeCell.textContent = formattedTime;
+                activityCell.textContent = "Check"; // Placeholder text
+
+                row.appendChild(timeCell);
+                row.appendChild(activityCell);
+
+                activityCell.addEventListener('click', function () {
+                    this.classList.toggle('highlight');
+                    timeCell.classList.toggle('checked');
+                });
+
+                tabletag.appendChild(row);
+            }
+        }
+
+        function showTimetable() {
+            const param = getParams();
+            const nextparam = getnextParams();
+
+            // 選択日付分のカレンダーを表示
+            for (let i = 0; i < param.selectedDates.length; i++) {
+                createTimetable(i);
+            }
+            for (let i = 0; i < nextparam.nm_selectedDates.length; i++) {
+                createnextTimetable(i);
+            }
+        }
+
+        // Create the table when the document is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            showTimetable();
+        });
+        //       ここまで
+    </script>
+    <script src="sqlite.js"></script>
+</body>
+
+</html>

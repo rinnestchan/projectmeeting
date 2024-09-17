@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>保存データの表示</title>
+    <!-- CSSファイルの参照 -->
+    <link rel="stylesheet" href="view_datastyle.css">
+</head>
+
+<body>
+    <h1>保存データ</h1>
+
+    <!-- データを表示するためのコンテナ -->
+    <div id="data-display"></div>
+
+    <!-- index.html へのリンク location.href='index.html'-->
+    <input type="button" onclick="history.back()" value="戻る">
+
+    <!-- SQL.jsの読み込み -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.5.0/sql-wasm.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // SQL.jsを使用してSQLiteデータベースを初期化
+            const SQL = await initSqlJs({
+                locateFile: filename => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.5.0/${filename}`
+            });
+            let db;
+
+            // ローカルストレージからデータベースを復元
+            const savedDb = localStorage.getItem('sqlite_db');
+            if (savedDb) {
+                const uInt8Array = new Uint8Array(JSON.parse(savedDb));
+                db = new SQL.Database(uInt8Array);
+
+                // データを表示
+                displayData(db);
+            } else {
+                alert('データベースが見つかりません。');
+            }
+
+            // データを表示する関数
+            function displayData(db) {
+                //日付順にソートname, date, time|date ASC, time ASC
+                const stmt = db.prepare("SELECT name, date, time FROM selected_times ORDER BY name ASC");
+                const dataByName = {};
+
+                // データを名前ごとにグループ化
+                while (stmt.step()) {
+                    const row = stmt.getAsObject();
+                    if (!dataByName[row.name]) {
+                        dataByName[row.name] = [];
+                    }
+                    dataByName[row.name].push({ date: row.date, time: row.time });
+                }
+
+                const container = document.getElementById('data-display');
+
+                // 名前ごとにテーブルを作成
+                for (const [name, records] of Object.entries(dataByName)) {
+                    const tablegroup = document.createElement('div')
+                    tablegroup.classList = "saveddata";
+                    container.appendChild(tablegroup)
+
+                    const nameHeading = document.createElement('h2');
+                    nameHeading.textContent = name;
+                    tablegroup.appendChild(nameHeading);
+
+                    const table = document.createElement('table');
+                    tablegroup.appendChild(table);
+
+                    records.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                    let currentDate = "";
+
+                    // 各レコードをテーブル行に変換
+                    records.forEach(record => {
+                        const row = document.createElement('tr');
+
+                        // 日付が同じなら表示しない
+                        if (record.date !== currentDate) {
+                            const dateCell = document.createElement('td');
+                            dateCell.textContent = record.date;
+                            row.appendChild(dateCell);
+                            currentDate = record.date;
+                        } else {
+                            const emptyCell = document.createElement('td');
+                            emptyCell.textContent = "";
+                            row.appendChild(emptyCell);
+                        }
+
+                        const timeCell = document.createElement('td');
+                        timeCell.textContent = record.time;
+                        row.appendChild(timeCell);
+
+                        table.appendChild(row);
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
